@@ -40,9 +40,14 @@ class BookSearch(object):
 
     def find_books_with(self, query_words):
         cleaned_query_words = self._strip_and_list_words(query_words)
+
+        # Cycle through all the query words and build up a set of books with one
+        # or many matching words.
+        found_books = set()
         for query_word in cleaned_query_words:
-            foundBooks = self._books_by_word.get(query_word)
-            return foundBooks
+            found_books.update(self._books_by_word.get(query_word))
+
+        return found_books
 
 if __name__ == '__main__':
     import argparse
@@ -51,15 +56,12 @@ if __name__ == '__main__':
                    help='an integer for the accumulator')
     args = parser.parse_args()
 
+    # Instantiate a new instance of BookSearch, using default json data.
     path = 'json/bookdata.json'
     current_book_search = BookSearch(path)
 
-    # Create a set to save found books for queried words to reduce duplicates
-    found_books = set()
-    for queryWord in args.strings:
-        found_new_books = current_book_search.find_books_with(queryWord)
-        if found_new_books:
-            found_books.update(found_new_books)
+    # Find some books!
+    found_books = current_book_search.find_books_with(' '.join(args.strings))
 
     # Print what books were found, if any.
     if found_books:
