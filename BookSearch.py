@@ -7,11 +7,24 @@ class BookSearch(object):
         self._books_by_word = self._process_books()
 
     def _load_books(self, path):
-        # import ipdb; ipdb.set_trace()
+        """
+        Loads book JSON data.
+        """
         with open(path) as json_file:
             return json.load(json_file)
 
     def _process_books(self):
+        """
+        Generates a Dictionary of book briefs (a simplified string
+        representation of a book) keyed to every word from every book
+        provided.
+
+        1. Creates the Dictionary
+        2. Cycles through each book
+        3. Generates a complete list of the unique words in the book
+        4. Cycles through each word
+        5. Saves book brief to a Set under that word
+        """
         keyed_books = {}
         for book_id in self._books.keys():
             book = self._books.get(book_id)
@@ -29,16 +42,29 @@ class BookSearch(object):
         return keyed_books
 
     def _get_all_book_words(self, book):
+        """
+        For a given book, creates and returns a single set of words found in a
+        book's title and description.
+        """
         book_words = self._strip_and_list_words(book.get('title'))
         book_words.update(self._strip_and_list_words(book.get('description')))
         return book_words
 
     def _strip_and_list_words(self, word_string):
+        """
+        For a given string, strips all non-alphanumeric characters, converts to
+        lowercase, and splits by spaces into a set of all the words.
+        """
         stripped_words = re.sub('[^a-zA-Z ]', '', word_string).lower()
         words_list = stripped_words.split()
         return set(words_list)
 
     def find_books_with(self, query_words):
+        """
+        For a given query string, all query words are checked as keys against
+        the collection of books keyed by word. All books found are returned as a
+        set.
+        """
         cleaned_query_words = self._strip_and_list_words(query_words)
 
         # Cycle through all the query words and build up a set of books with one
@@ -53,7 +79,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Find books for query words.')
     parser.add_argument('strings', metavar='N', type=str, nargs='+',
-                   help='an integer for the accumulator')
+                   help='a word to search for in each book in the library.')
     args = parser.parse_args()
 
     # Instantiate a new instance of BookSearch, using default json data.
