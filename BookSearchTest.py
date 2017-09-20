@@ -43,5 +43,25 @@ class BookSearchTest(unittest.TestCase):
         found_books = self.test_book_search.find_books_with(query)
         assert len(found_books) is 2
 
+    def test_book_search_search_find_books_with_multiple_words(self):
+        """
+        Test that the BookSearch will find a series of words all at one time and
+        return a deduplicated list of books that contain one or both of the
+        words being searched for.
+        """
+        query = 'xml'
+        found_books = self.test_book_search.find_books_with(query)
+        assert len(found_books) is 1
+
+        # Test another unrelated word from different books.
+        query = 'crawlies'
+        found_books = self.test_book_search.find_books_with(query)
+        assert len(found_books) is 1
+
+        # Test with both query words from above.
+        query = 'xml crawlies'
+        found_books = self.test_book_search.find_books_with(query)
+        assert len(found_books) is 2
+
 if __name__ == '__main__':
     unittest.main()
